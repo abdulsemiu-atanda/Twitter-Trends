@@ -1,0 +1,5 @@
+{
+  "twitter": {
+    "authorization": "MY_TWITTER_OAUTH2_KEY"
+  }
+}
