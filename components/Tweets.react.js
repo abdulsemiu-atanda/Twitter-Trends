@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import {ActivityIndicator, Dimensions, ListView, View, Text, Image, StyleSheet} from 'react-native'
+import {ActivityIndicator, Dimensions, ListView, View, Text, Image, StyleSheet, RefreshControl} from 'react-native'
 import {connect} from 'react-redux'
 
-import {TWEETS} from '../actionTypes/tweetConstants'
+import {TWEETS, TWEETS_REFRESH} from '../actionTypes/tweetConstants'
 import {asyncRequest} from '../util/asyncUtil'
 import NotFound from './NotFound.react'
 
@@ -21,6 +21,7 @@ class Tweets extends Component {
     }
 
     this.renderRow = this.renderRow.bind(this)
+    this.onRefresh = this.onRefresh.bind(this)
   }
 
   componentDidMount() {
@@ -39,6 +40,12 @@ class Tweets extends Component {
       }
     }
     return null
+  }
+
+  onRefresh() {
+    const {query} = this.props.navigation.state.params
+
+    this.props.refreshTweet(`search/tweets.json?q=${query}`)
   }
 
   renderRow(tweet) {
@@ -68,6 +75,13 @@ class Tweets extends Component {
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.twitter.refreshing}
+              onRefresh={this.onRefresh}
+              title='Pull to refresh.'
+            />
+          }
         />
       </View>
     )
@@ -79,7 +93,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  fetchTweets: endpoint => dispatch(asyncRequest(TWEETS, endpoint))
+  fetchTweets: endpoint => dispatch(asyncRequest(TWEETS, endpoint)),
+  refreshTweet: endpoint => dispatch(asyncRequest(TWEETS_REFRESH, endpoint))
 })
 
 const styles = StyleSheet.create({

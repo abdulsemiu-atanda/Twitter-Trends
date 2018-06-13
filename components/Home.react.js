@@ -7,12 +7,13 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  RefreshControl
 } from 'react-native'
 import {connect} from 'react-redux'
 import moment from 'moment'
 
-import {TRENDS} from '../actionTypes/tweetConstants'
+import {TRENDS, TRENDS_REFRESH} from '../actionTypes/tweetConstants'
 import {asyncRequest} from '../util/asyncUtil'
 
 const {width, height} = Dimensions.get('screen')
@@ -30,6 +31,7 @@ class App extends Component {
     }
 
     this.renderRow = this.renderRow.bind(this)
+    this.onRefresh = this.onRefresh.bind(this)
   }
 
   componentDidMount() {
@@ -48,9 +50,9 @@ class App extends Component {
     return null
   }
 
-  goToTweets(query) {
-    this.props.navigation.navigate('Tweet', {query})
-  }
+  goToTweets(query) { this.props.navigation.navigate('Tweet', {query}) }
+
+  onRefresh() { this.props.refreshTrends('trends/place.json?id=23424908') }
 
   renderRow(trend) {
     return (
@@ -71,6 +73,13 @@ class App extends Component {
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.trends.refreshing}
+              onRefresh={this.onRefresh}
+              title='Pull to refresh.'
+            />
+          }
         />
       </View>
     )
@@ -82,7 +91,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  fetchTrends: (endpoint) => dispatch(asyncRequest(TRENDS, endpoint))
+  fetchTrends: (endpoint) => dispatch(asyncRequest(TRENDS, endpoint)),
+  refreshTrends: endpoint => dispatch(asyncRequest(TRENDS_REFRESH, endpoint))
 })
 
 const styles = StyleSheet.create({
