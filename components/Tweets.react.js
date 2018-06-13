@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 
 import {TWEETS} from '../actionTypes/tweetConstants'
 import {asyncRequest} from '../util/asyncUtil'
+import NotFound from './NotFound.react'
 
 const {width, height} = Dimensions.get('screen')
 
@@ -15,7 +16,8 @@ class Tweets extends Component {
 
     this.state = {
       dataSource: ds.cloneWithRows(props.twitter.tweets),
-      loading: true
+      loading: true,
+      twitterLoading: props.twitter.loading
     }
 
     this.renderRow = this.renderRow.bind(this)
@@ -30,7 +32,7 @@ class Tweets extends Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 
-    if (nextProps.twitter.tweets.length > 0) {
+    if (nextProps.twitter.loading !== prevState.twitterLoading) {
       return {
         dataSource: ds.cloneWithRows(nextProps.twitter.tweets),
         loading: false
@@ -58,6 +60,8 @@ class Tweets extends Component {
   render() {
     if (this.state.loading || this.props.twitter.loading) {
       return <ActivityIndicator animating={this.state.loading || this.props.twitter.loading} color='blue' size='large' />
+    } else if (!this.props.twitter.tweets.length) {
+      return <NotFound term={this.props.navigation.state.params.query} />
     }
     return (
       <View style={styles.container}>
