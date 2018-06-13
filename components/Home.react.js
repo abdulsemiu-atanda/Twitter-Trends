@@ -48,10 +48,14 @@ class App extends Component {
     return null
   }
 
+  goToTweets(query) {
+    this.props.navigation.navigate('Tweet', {query})
+  }
+
   renderRow(trend) {
     return (
       <View style={styles.card}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.goToTweets(trend.query)}>
           <Text style={styles.instructions}>{trend.name}</Text>
         </TouchableOpacity>
       </View>
