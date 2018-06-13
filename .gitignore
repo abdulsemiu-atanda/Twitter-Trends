@@ -58,5 +58,3 @@ buck-out/
 
 private/data/settings.json
 
-android/app/src/main/res/
-android/app/src/main/assets/
