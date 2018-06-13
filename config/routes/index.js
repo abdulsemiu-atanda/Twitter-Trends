@@ -48,7 +48,8 @@ const HomeTabs = createTabNavigator({
       height: 40
     },
     showLabel: false
-  }
+  },
+  tabBarPosition: 'bottom'
 })
 
 const AppNavigator = createStackNavigator({
