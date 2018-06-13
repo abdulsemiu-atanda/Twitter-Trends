@@ -6,9 +6,11 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native'
 import {connect} from 'react-redux'
+import moment from 'moment'
 
 import {TRENDS} from '../actionTypes/tweetConstants'
 import {asyncRequest} from '../util/asyncUtil'
@@ -46,13 +48,22 @@ class App extends Component {
     return null
   }
 
-  renderRow(trend) { return <View style={styles.card}><Text style={styles.instructions}>{trend.name}</Text></View> }
+  renderRow(trend) {
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity>
+          <Text style={styles.instructions}>{trend.name}</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
 
   render() {
     if (this.state.loading || this.props.trends.loading)
       return <ActivityIndicator animating={this.state.loading || this.props.trends.loading} color='blue' size='large' />
     return (
       <View style={styles.container}>
+        <Text style={styles.heading}>Last Update: {moment(this.props.trends.lastUpdated).startOf('hour').fromNow()}</Text>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
@@ -82,11 +93,20 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.05,
     marginBottom: height * 0.01,
     height: height * 0.1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    shadowOffset: {width: 10,  height: 10},
+    shadowColor: 'rgb(128,128,128)',
+    shadowOpacity: 0.5
+  },
+  heading: {
+    textAlign: 'center',
+    fontSize: 15,
+    color: 'grey',
+    marginBottom: height * 0.02
   },
   instructions: {
     textAlign: 'center',
-    color: '#333333',
+    color: 'rgb(0, 132, 180)',
     marginBottom: 5,
   },
 })
