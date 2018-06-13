@@ -6,8 +6,13 @@ import Home from '../../components/Home.react'
 
 const AppNavigator = createStackNavigator({
   Home: {
-    screen: Home
+    screen: Home,
+    navigationOptions: {
+      title: 'Trends'
+    }
   }
+}, {
+  initialRouteName: 'Home',
 })
 
 export default AppNavigator
