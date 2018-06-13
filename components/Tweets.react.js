@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
-import {ActivityIndicator, Dimensions, ListView, View, Text, Image, StyleSheet, RefreshControl} from 'react-native'
+import {ActivityIndicator, Dimensions, ListView, View, Text, Image, StyleSheet, RefreshControl, Platform} from 'react-native'
 import {connect} from 'react-redux'
+import Icon from 'react-native-vector-icons/Ionicons'
+import moment from 'moment'
 
 import {TWEETS, TWEETS_REFRESH} from '../actionTypes/tweetConstants'
 import {asyncRequest} from '../util/asyncUtil'
@@ -49,6 +51,8 @@ class Tweets extends Component {
   }
 
   renderRow(tweet) {
+    const date = new Date(tweet.created_at)
+
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
@@ -60,6 +64,13 @@ class Tweets extends Component {
         </View>
         <Text>{tweet.text}</Text>
         {tweet.extended_entities && tweet.extended_entities.media.length && <Image style={styles.image} source={{uri: tweet.extended_entities.media[0].media_url_https}} />}
+        <View style={styles.activity}>
+          <Icon style={styles.retweetIcon} name={Platform.OS === 'ios' ? 'ios-repeat' : 'md-repeat'} size={32} color='grey' />
+          <Text style={[styles.count, {marginRight: width * 0.08}]}>{tweet.retweet_count}</Text>
+          <Icon style={styles.favoriteIcon} name={Platform.OS === 'ios' ? 'ios-heart' : 'md-heart'} size={20} color='blue' />
+          <Text style={styles.count}>{tweet.favorite_count}</Text>
+          <Text style={styles.date}>{moment(date.toISOString()).startOf('hour').fromNow()}</Text>
+        </View>
       </View>
     )
   }
@@ -98,6 +109,10 @@ const mapDispatchToProps = dispatch => ({
 })
 
 const styles = StyleSheet.create({
+  activity: {
+    flexDirection: 'row',
+    width: width * 0.95
+  },
   card: {
     backgroundColor: '#FFFF',
     justifyContent: 'flex-start',
@@ -113,6 +128,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     backgroundColor: '#F7F7F7'
   },
+  count: {
+    marginTop: height * 0.02
+  },
+  date: {
+    marginLeft: 'auto',
+    marginTop: height * 0.02
+  },
+  favoriteIcon: {
+    marginTop: height * 0.02,
+    marginRight: height * 0.01
+  },
   note: {
     fontSize: 12,
     color: 'grey'
@@ -123,6 +149,10 @@ const styles = StyleSheet.create({
   image: {
     width: width * 0.95,
     height: Math.round(width * 9 / 16)
+  },
+  retweetIcon: {
+    marginTop: height * 0.01,
+    marginRight: height * 0.01
   },
   thumbnail: {
     width: (width * 0.15),
